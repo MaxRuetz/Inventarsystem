@@ -134,6 +134,49 @@ class AdminController extends Controller
 
     public function invite(Request $request)
     {
+        //get the email
+        try
+        {
+            //get the request informations
+            $r_email = $request->input('email');
+
+            //email is empty or not sent
+            if($r_email=="")
+            {
+                return "email is empty";
+            }else
+            {
+                //return "here we are";
+                $db_email = DB::table('user')->where('Email', '=', $r_email)->select('Email')->pluck('Email');
+                
+                $db_email_check = "";
+                $db_email_check = $db_email[0];
+                
+                return $db_email_check;
+                //if user allready exists
+                if($db_email_check==$r_email)
+                {
+                    //update old
+                    return "old one";
+                }
+                else
+                {
+                    //insert new one
+                    return "new one";
+                }
+            }
+
+
+
+        }catch(\Exception $e)
+        {
+            return "can't get the email";
+        }
+
+    }
+    /*old not working
+    public function invite(Request $request)
+    {
         //Check for request
         try
         {
@@ -195,4 +238,5 @@ class AdminController extends Controller
 
         //return errors 
     }
+    */
 }
