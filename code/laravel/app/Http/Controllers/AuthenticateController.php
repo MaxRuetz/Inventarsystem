@@ -153,12 +153,17 @@ class AuthenticateController extends Controller
     public function logout()
     {
         try{
+            //read the token from header
             $token = JWTAuth::getToken();
+
+            //set the token invalid
             JWTAuth::invalidate($token);
             
+            //return sucess message
             return response()->json(['success' => 'logout was successful']);
         } 
         catch(\Exception $e){
+            //return error message
             return response()->json(['error' => 'logout failed. no or wrong token was founded.']);
         }
     }
