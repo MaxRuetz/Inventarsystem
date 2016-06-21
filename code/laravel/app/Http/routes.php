@@ -16,6 +16,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//Should imported in the Middleware
+Route::post('/api/v1/restricted/admin/invite', ['uses' =>'AdminController@invite']);
 
 //// Item Controller
 //Item Information API - Public
@@ -28,6 +30,7 @@ Route::get('/api/v1/item/details/{id}', ['uses' =>'ItemController@SingleDetailIt
 Route::post('/api/v1/login', ['uses' =>'AuthenticateController@createToken']);
 Route::post('/api/v1/test', ['uses' =>'AuthenticateController@checkAuth']);
 
+/*
 //Item Information API - Restricted
 Route::get('/api/v1/restricted/item/allItems', 'ItemController@RestrictedshowAllItems');
 Route::get('/api/v1/restricted/item/allIds', ['uses' =>'ItemController@RestrictedshowAllIds']);
@@ -99,8 +102,8 @@ Route::post('/api/v1/restricted/user/create', ['uses' =>'UserController@store'])
 Route::post('/api/v1/restricted/user/update/{id}', ['uses' =>'UserController@UserUpdate']);
 
 
+*/
 
-/*
 //Middleware Checking
 
 //before opening the api, the middleware will check the token
@@ -177,5 +180,3 @@ Route::group(['middleware' => 'JWTCheck'], function () {
 
 
 });
-
-*/

@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use DB;
 use Hash;
 
+use Crypt;
 use App\Http\Requests;
 
 class AdminController extends Controller
@@ -120,14 +121,78 @@ class AdminController extends Controller
 
         $checkpw = DB::table('user')->join('member', 'user.member_id', '=', 'member.id')->where('user.id', $id)->select('member.password')->get();
 
-        $R_oldpassword
+        //$R_oldpassword
 
-        if('')
+        /*if('')
         {
 
         }
+        */
+
+        //return "Test";
+    }
+
+    public function invite(Request $request)
+    {
+        //Check for request
+        try
+        {
+            //Set Var to NULL
+            $db_email = "";
+            //Read request
+            $r_email = $request->input('email');
+            //Check Database for existing email
+
+            //Check for email in database
+            try{
+                
+            //SQL select for users email address and set it in the db_email
+            $db_email = DB::table('user')->where('user.Email', $r_email)->select('Email')->get();
+                
+            return $db_email;
+
+            //Generate hash for email address
+            //if email allready exisists
+            if($db_email[0]!=""){
+            $regToken = Crypt::encrypt($db_email);
+            //if email not exists
+            }else if($db_email==""){
+            $regToken = Crypt::encrypt($r_email);
+            }
+
+            return $regToken;
+
+            //if db_email is not allready set than
+            if($db_email!=""){
+            $SaveInDB = DB::table('user')->insert(
+                [ 
+                 'Email' => $db_email, 
+                 'RegistrationToken' => $regToken, 
+                 'created_at'=>  Carbon::now()]);
+
+            //if the mail was allready given in table (not saved agained)
+            }else if($db_email==""){
+              $SaveInDB = DB::table('user')->insert(
+                [ 
+                 'Email' => $r_email, 
+                 'RegistrationToken' => $regToken, 
+                 'created_at'=>  Carbon::now()]);  
+            }
+            //Send email with token to the users email address
 
 
-        return 'Success';
+            return "email should be sent.";
+
+            }catch(\Exception $e){
+                //If the email is not allready given in the table
+                return "Something with your Email or the DB went wrong";
+            }
+
+        }catch(\Exception $e){
+            return "wrong request";
+        }
+
+
+        //return errors 
     }
 }
