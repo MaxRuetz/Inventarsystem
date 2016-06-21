@@ -28,9 +28,10 @@ Route::get('/api/v1/item/details/{id}', ['uses' =>'ItemController@SingleDetailIt
 
 //JWT AUTH
 Route::post('/api/v1/login', ['uses' =>'AuthenticateController@createToken']);
-Route::post('/api/v1/test', ['uses' =>'AuthenticateController@checkAuth']);
 
-/*
+Route::post('/api/v1/logout', ['uses' =>'AuthenticateController@checkAuth']); //Has to be implemented
+
+/* UNCOMMNET TO USE THE ROUTES WITHOUT THE MIDDLEWARE
 //Item Information API - Restricted
 Route::get('/api/v1/restricted/item/allItems', 'ItemController@RestrictedshowAllItems');
 Route::get('/api/v1/restricted/item/allIds', ['uses' =>'ItemController@RestrictedshowAllIds']);
@@ -107,6 +108,8 @@ Route::post('/api/v1/restricted/user/update/{id}', ['uses' =>'UserController@Use
 //Middleware Checking
 
 //before opening the api, the middleware will check the token
+
+//Route::post('/api/v1/test', ['uses' =>'AuthenticateController@checkAuth']); <-- Middleware Testing Route
 Route::group(['middleware' => 'JWTCheck'], function () {
     //Item Information API - Restricted
 	Route::get('/api/v1/restricted/item/allItems', 'ItemController@RestrictedshowAllItems');
