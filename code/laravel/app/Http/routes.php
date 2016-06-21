@@ -171,7 +171,9 @@ Route::group(['middleware' => 'JWTCheck'], function () {
 	Route::post('/api/v1/restricted/admin/create', ['uses' =>'AdminController@store']);
 	Route::post('/api/v1/restricted/admin/deactivate/{id}', ['uses' =>'AdminController@AdminDeactivate']);
 
-	Route::post('/api/v1/logout', ['uses' =>'AuthenticateController@checkAuth']); //Has to be implemented
+	//Token must sent in Authorizaton to this address ***NEW***
+	Route::get('/api/v1/logout', ['uses' =>'AuthenticateController@logout']);
+
 
 	//// User Controller
 	Route::get('/api/v1/restricted/user/allUser', ['uses' =>'UserController@showAllUser']);
