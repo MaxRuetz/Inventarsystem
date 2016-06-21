@@ -29,7 +29,6 @@ Route::get('/api/v1/item/details/{id}', ['uses' =>'ItemController@SingleDetailIt
 //JWT AUTH
 Route::post('/api/v1/login', ['uses' =>'AuthenticateController@createToken']);
 
-Route::post('/api/v1/logout', ['uses' =>'AuthenticateController@checkAuth']); //Has to be implemented
 
 /* UNCOMMNET TO USE THE ROUTES WITHOUT THE MIDDLEWARE
 //Item Information API - Restricted
@@ -172,7 +171,7 @@ Route::group(['middleware' => 'JWTCheck'], function () {
 	Route::post('/api/v1/restricted/admin/create', ['uses' =>'AdminController@store']);
 	Route::post('/api/v1/restricted/admin/deactivate/{id}', ['uses' =>'AdminController@AdminDeactivate']);
 
-
+	Route::post('/api/v1/logout', ['uses' =>'AuthenticateController@checkAuth']); //Has to be implemented
 
 	//// User Controller
 	Route::get('/api/v1/restricted/user/allUser', ['uses' =>'UserController@showAllUser']);
