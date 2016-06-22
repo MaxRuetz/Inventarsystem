@@ -2,7 +2,7 @@
 
 /* AllControllers */
 
-var invControllers = angular.module('invControllers', ['angularUtils.directives.dirPagination']); 
+var invControllers = angular.module('invControllers', ['angularUtils.directives.dirPagination', 'ngStorage']); 
 
 //==============================
 //Request Admin list
@@ -574,7 +574,7 @@ invControllers.controller('indexCtrl', function ($scope, $location, $anchorScrol
 //###############
 //loginController: sends login-data, gets and stores token, throws error if invalid userdata, routes to next page
 invControllers.controller('loginCtrl', loginCtrl);
-function loginCtrl($scope, $window, $location, $http){
+function loginCtrl($scope, $localStorage, $location, $http){
 
   $scope.signIn = function(){
     var userData = {
@@ -590,7 +590,8 @@ function loginCtrl($scope, $window, $location, $http){
     .then(
       function(response){
         //store token
-        $window.localStorage.token = response.token;
+        console.log(JSON.stringify(response.data.token));
+        $localStorage.token = response.data.token;
         $location.path('/dashboard');
       },  
         //if no response throw error-msg
@@ -611,7 +612,7 @@ function inviteAdminCtrl($scope, $http, $location){
   $scope.sendInvitation = function(email) {
 
     var email_adress = {
-      "Email" : email
+      "email" : email
     };
 
     $http({

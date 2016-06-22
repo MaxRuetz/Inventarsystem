@@ -33,11 +33,11 @@ function($resource){
 
 //puts JTW-Token in Http-Header
 invServices.factory('tokenInterceptor', tokenInterceptor);
-function tokenInterceptor($window){
+function tokenInterceptor($localStorage){
 	return{
 		request: function(config){
-			if($window.localStorage.token){
-				config.headers.Authorization = 'Bearer ' + $window.localStorage.token;
+			if($localStorage.token){
+				config.headers.Authorization = 'Bearer ' + $localStorage.token;
 			}
 			return config;
 		}
@@ -47,7 +47,7 @@ function tokenInterceptor($window){
 
 //returns JWT-Claims (User-nr, session, etc.) by using: token.getTokenClaims();
 invServices.factory('token', tokenClaims);
-function tokenClaims($window){
+function tokenClaims($localStorage){
 
 	//fills in bytes, replaces illegal symbols, important for decoding 
 	function urlBase64Decode(str) {
@@ -72,7 +72,7 @@ function tokenClaims($window){
     }
 
     function getClaims() {
-        var token = $window.localStorage.token;
+        var token = $localStorage.token;
         var user = {};
         if (typeof token !== 'undefined') {
         	//get claims-part of token

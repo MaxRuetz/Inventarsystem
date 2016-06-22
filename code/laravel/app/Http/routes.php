@@ -16,6 +16,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//Should imported in the Middleware
+Route::post('/api/v1/restricted/admin/invite', ['uses' =>'AdminController@invite']);
+Route::post('/send', 'EmailController@send');
 
 //// Item Controller
 //Item Information API - Public
@@ -26,8 +29,9 @@ Route::get('/api/v1/item/details/{id}', ['uses' =>'ItemController@SingleDetailIt
 
 //JWT AUTH
 Route::post('/api/v1/login', ['uses' =>'AuthenticateController@createToken']);
-Route::post('/api/v1/test', ['uses' =>'AuthenticateController@checkAuth']);
 
+
+/* UNCOMMNET TO USE THE ROUTES WITHOUT THE MIDDLEWARE
 //Item Information API - Restricted
 Route::get('/api/v1/restricted/item/allItems', 'ItemController@RestrictedshowAllItems');
 Route::get('/api/v1/restricted/item/allIds', ['uses' =>'ItemController@RestrictedshowAllIds']);
@@ -99,11 +103,13 @@ Route::post('/api/v1/restricted/user/create', ['uses' =>'UserController@store'])
 Route::post('/api/v1/restricted/user/update/{id}', ['uses' =>'UserController@UserUpdate']);
 
 
+*/
 
-/*
 //Middleware Checking
 
 //before opening the api, the middleware will check the token
+
+//Route::post('/api/v1/test', ['uses' =>'AuthenticateController@checkAuth']); <-- Middleware Testing Route
 Route::group(['middleware' => 'JWTCheck'], function () {
     //Item Information API - Restricted
 	Route::get('/api/v1/restricted/item/allItems', 'ItemController@RestrictedshowAllItems');
@@ -166,6 +172,8 @@ Route::group(['middleware' => 'JWTCheck'], function () {
 	Route::post('/api/v1/restricted/admin/create', ['uses' =>'AdminController@store']);
 	Route::post('/api/v1/restricted/admin/deactivate/{id}', ['uses' =>'AdminController@AdminDeactivate']);
 
+	//Token must sent in Authorizaton to this address ***NEW***
+	Route::get('/api/v1/logout', ['uses' =>'AuthenticateController@logout']);
 
 
 	//// User Controller
@@ -177,5 +185,3 @@ Route::group(['middleware' => 'JWTCheck'], function () {
 
 
 });
-
-*/

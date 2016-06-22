@@ -13,7 +13,7 @@ use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTFactory;
 //use Tymon\JWTAuth\JWTManager;
-
+//invalidate
 class AuthenticateController extends Controller
 {
     
@@ -148,5 +148,23 @@ class AuthenticateController extends Controller
         return gettype($token);
 
         */
+    }
+
+    public function logout()
+    {
+        try{
+            //read the token from header
+            $token = JWTAuth::getToken();
+
+            //set the token invalid
+            JWTAuth::invalidate($token);
+            
+            //return sucess message
+            return response()->json(['success' => 'logout was successful']);
+        } 
+        catch(\Exception $e){
+            //return error message
+            return response()->json(['error' => 'logout failed. no or wrong token was founded.']);
+        }
     }
 }

@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use DB;
 use Hash;
+use Mail;
 
+use Crypt;
 use App\Http\Requests;
 
 class AdminController extends Controller
@@ -120,14 +122,120 @@ class AdminController extends Controller
 
         $checkpw = DB::table('user')->join('member', 'user.member_id', '=', 'member.id')->where('user.id', $id)->select('member.password')->get();
 
-        $R_oldpassword
+        //$R_oldpassword
 
-        if('')
+        /*if('')
         {
 
         }
+        */
 
-
-        return 'Success';
+        //return "Test";
     }
+
+    public function invite(Request $request)
+    {
+   
+        //get the email from the response and set a check varaible
+        $r_email = $request->input('email');
+        $_mail_is_in_db = false;
+
+        //make an db request if mail is in database
+        $db_email = DB::table('user')->where('user.Email', $r_email)->select('Email')->get();
+        
+        //set check if mail is allready in database
+        if($db_email!=NULL){
+            $_mail_is_in_db = true;
+        }
+        
+        //if mail is allready in db than update or set a new hash code and send it
+        if($_mail_is_in_db){
+            $user_id = DB::table('user')->where('Email', $r_email)->select('id')->get();
+
+            $reg_hash_token = Hash::make($r_email);
+            DB::table('user')->where('Email', '=', $r_email)
+            ->update(array('RegistrationToken' => $reg_hash_token));
+
+            Mail::send('emails.welcome', ['title' => 'You got an Invite', 'content' => 'test text'], function ($message)
+            {
+
+                $message->from(' 789d962ab3-169976@inbox.mailtrap.io', 'Inventarsystem');
+
+                $message->to(' 789d962ab3-169976@inbox.mailtrap.io');
+                echo "email was sent";
+            });
+
+        return response()->json(['message' => 'Request completed']);    
+            //return "hash is saved in db";
+        }else if($_mail_is_in_db == false){
+            //insert new user with email, and create a hash token
+
+        }
+
+    }
+    /*old not working
+    public function invite(Request $request)
+    {
+        //Check for request
+        try
+        {
+            //Set Var to NULL
+            $db_email = "";
+            //Read request
+            $r_email = $request->input('email');
+            //Check Database for existing email
+
+            //Check for email in database
+            try{
+                
+            //SQL select for users email address and set it in the db_email
+            $db_email = DB::table('user')->where('user.Email', $r_email)->select('Email')->get();
+                
+            return $db_email;
+
+            //Generate hash for email address
+            //if email allready exisists
+            if($db_email[0]!=""){
+            $regToken = Crypt::encrypt($db_email);
+            //if email not exists
+            }else if($db_email==""){
+            $regToken = Crypt::encrypt($r_email);
+            }
+
+            return $regToken;
+
+            //if db_email is not allready set than
+            if($db_email!=""){
+            $SaveInDB = DB::table('user')->insert(
+                [ 
+                 'Email' => $db_email, 
+                 'RegistrationToken' => $regToken, 
+                 'created_at'=>  Carbon::now()]);
+
+            //if the mail was allready given in table (not saved agained)
+            }else if($db_email==""){
+              $SaveInDB = DB::table('user')->insert(
+                [ 
+                 'Email' => $r_email, 
+                 'RegistrationToken' => $regToken, 
+                 'created_at'=>  Carbon::now()]);  
+            }
+            //Send email with token to the users email address
+
+
+            return "email should be sent.";
+
+            }catch(\Exception $e){
+                //If the email is not allready given in the table
+                return "Something with your Email or the DB went wrong";
+            }
+
+        }catch(\Exception $e){
+            return "wrong request";
+        }
+
+
+        //return errors 
+    }
+    */
 }
