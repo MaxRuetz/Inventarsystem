@@ -29,6 +29,7 @@ Route::get('/api/v1/item/details/{id}', ['uses' =>'ItemController@SingleDetailIt
 
 //JWT AUTH
 Route::post('/api/v1/login', ['uses' =>'AuthenticateController@createToken']);
+Route::post('/api/v1/check', ['uses' =>'AuthenticateController@checkAuth']);
 
 
 /* UNCOMMNET TO USE THE ROUTES WITHOUT THE MIDDLEWARE
