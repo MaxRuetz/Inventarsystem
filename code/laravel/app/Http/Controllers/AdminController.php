@@ -152,13 +152,20 @@ class AdminController extends Controller
         if($_mail_is_in_db){
             $user_id = DB::table('user')->where('Email', $r_email)->select('id')->get();
 
+            $reg_hash_token = Hash::make($r_email);
             DB::table('user')->where('Email', '=', $r_email)
-            ->update(array('RegistrationToken' => Hash::make($r_email)));
+            ->update(array('RegistrationToken' => $reg_hash_token));
 
-            Mail::send('emails.welcome', ['key' => 'value'], function($message)
+            Mail::send('emails.welcome', ['title' => 'You got an Invite', 'content' => 'test text'], function ($message)
             {
-                $message->to('test@byom.de', 'John Smith')->subject('Welcome!')->from(' 789d962ab3-169976@inbox.mailtrap.io', 'Your Application');
+
+                $message->from(' 789d962ab3-169976@inbox.mailtrap.io', 'Inventarsystem');
+
+                $message->to(' 789d962ab3-169976@inbox.mailtrap.io');
+                echo "email was sent";
             });
+
+        return response()->json(['message' => 'Request completed']);    
             //return "hash is saved in db";
         }else if($_mail_is_in_db == false){
             //insert new user with email, and create a hash token
