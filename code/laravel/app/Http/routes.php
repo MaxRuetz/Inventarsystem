@@ -18,6 +18,7 @@ Route::get('/', function () {
 
 //Should imported in the Middleware
 Route::post('/api/v1/restricted/admin/invite', ['uses' =>'AdminController@invite']);
+Route::post('/send', 'EmailController@send');
 
 //// Item Controller
 //Item Information API - Public

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use DB;
 use Hash;
+use Mail;
 
 use Crypt;
 use App\Http\Requests;
@@ -134,43 +135,34 @@ class AdminController extends Controller
 
     public function invite(Request $request)
     {
-        //get the email
-        try
-        {
-            //get the request informations
-            $r_email = $request->input('email');
+   
+        //get the email from the response and set a check varaible
+        $r_email = $request->input('email');
+        $_mail_is_in_db = false;
 
-            //email is empty or not sent
-            if($r_email=="")
+        //make an db request if mail is in database
+        $db_email = DB::table('user')->where('user.Email', $r_email)->select('Email')->get();
+        
+        //set check if mail is allready in database
+        if($db_email!=NULL){
+            $_mail_is_in_db = true;
+        }
+        
+        //if mail is allready in db than update or set a new hash code and send it
+        if($_mail_is_in_db){
+            $user_id = DB::table('user')->where('Email', $r_email)->select('id')->get();
+
+            DB::table('user')->where('Email', '=', $r_email)
+            ->update(array('RegistrationToken' => Hash::make($r_email)));
+
+            Mail::send('emails.welcome', ['key' => 'value'], function($message)
             {
-                return "email is empty";
-            }else
-            {
-                //return "here we are";
-                $db_email = DB::table('user')->where('Email', '=', $r_email)->select('Email')->pluck('Email');
-                
-                $db_email_check = "";
-                $db_email_check = $db_email[0];
-                
-                return $db_email_check;
-                //if user allready exists
-                if($db_email_check==$r_email)
-                {
-                    //update old
-                    return "old one";
-                }
-                else
-                {
-                    //insert new one
-                    return "new one";
-                }
-            }
+                $message->to('test@byom.de', 'John Smith')->subject('Welcome!')->from(' 789d962ab3-169976@inbox.mailtrap.io', 'Your Application');
+            });
+            //return "hash is saved in db";
+        }else if($_mail_is_in_db == false){
+            //insert new user with email, and create a hash token
 
-
-
-        }catch(\Exception $e)
-        {
-            return "can't get the email";
         }
 
     }
