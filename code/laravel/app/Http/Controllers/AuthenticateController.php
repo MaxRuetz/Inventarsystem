@@ -12,27 +12,51 @@ use DB;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTFactory;
+use Tymon\JWTAuth\Facades\JWTManager;
 //use Tymon\JWTAuth\JWTManager;
 //invalidate
 class AuthenticateController extends Controller
 {
     
-    public function checkAuth(Request $request)
+    public function checkAuth()
     {
         try{
-            // try code
-            //$token = 'Bearer ' . JWTAuth::getToken();
+            //get the token from the authorization header
             $token = JWTAuth::getToken();
             
+            //get the payload from the token
             $payload = JWTAuth::getPayload($token);
-            //return $payload; 
-
-            $manager = JWTAuth::manager();
-            $test = $manager->decode($token);
-
             
-            //token is valid --> return the token
-            return $token;
+            //find the important string part from the payload            
+            $find_pos = strrpos($payload, "User_Email");
+
+
+            //trim the string to the right size
+            $working_payload = substr($payload,0,19);
+
+            //now filter for the user id
+            $p_user_id = filter_var($working_payload, FILTER_SANITIZE_NUMBER_INT);
+            
+            $user_isAdmin = 0;
+            $user_isActivated = 0;
+
+            $user_isAdmin = DB::table('user')
+            ->join('member', 'member.id', '=', 'user.member_id')
+            ->where('user.id', '=', $p_user_id)
+            ->select('member.isAdmin')
+            ->pluck('isAdmin');
+
+            $user_isActivated = DB::table('user')
+            ->join('member', 'member.id', '=', 'user.member_id')
+            ->where('user.id', '=', $p_user_id)
+            ->select('member.isActivated')
+            ->pluck('isActivated');
+
+            if($user_isAdmin[0]==1 && $user_isActivated[0]==1){
+                return $token;
+            }else{<
+                return response()->json(['error' => 'you are not an activated user or you dont had administrator rights']);
+            }
         } 
         catch(\Exception $e){
             return response()->json(['error' => 'login failed. no or wrong token was founded.']);
@@ -150,11 +174,12 @@ class AuthenticateController extends Controller
         */
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         try{
             //read the token from header
-            $token = JWTAuth::getToken();
+            //$token = JWTAuth::getToken();
+            $token = $request->input('token');
 
             //set the token invalid
             JWTAuth::invalidate($token);

@@ -29,7 +29,7 @@ Route::get('/api/v1/item/details/{id}', ['uses' =>'ItemController@SingleDetailIt
 
 //JWT AUTH
 Route::post('/api/v1/login', ['uses' =>'AuthenticateController@createToken']);
-Route::post('/api/v1/check', ['uses' =>'AuthenticateController@checkAuth']);
+Route::get('/api/v1/check', ['uses' =>'AuthenticateController@checkAuth']);
 
 
 /* UNCOMMNET TO USE THE ROUTES WITHOUT THE MIDDLEWARE
@@ -174,7 +174,7 @@ Route::group(['middleware' => 'JWTCheck'], function () {
 	Route::post('/api/v1/restricted/admin/deactivate/{id}', ['uses' =>'AdminController@AdminDeactivate']);
 
 	//Token must sent in Authorizaton to this address ***NEW***
-	Route::get('/api/v1/logout', ['uses' =>'AuthenticateController@logout']);
+	Route::post('/api/v1/logout', ['uses' =>'AuthenticateController@logout']);
 
 
 	//// User Controller
